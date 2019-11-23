@@ -1,0 +1,53 @@
+using System;
+using System.Web.Services;
+using System.Xml;
+using System.IO;
+using System.Xml.Schema;
+
+namespace MainProgram
+{
+    [WebService(Namespace = "http://tempuri.org/")]
+    [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
+    [System.ComponentModel.ToolboxItem(false)]
+    public class WebServicesTest : System.Web.Services.WebService
+    {
+
+        [WebMethod]
+        public int PayCheck()
+        {
+            //string path = new Uri(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().CodeBase)).LocalPath;
+
+            var path = @"/Users/kamalkumarjesuranjan/Desktop/WorkingPath/";
+
+            try
+            {
+
+                string readText = System.IO.File.ReadAllText(path + "Edifact3.xml");
+
+                XmlDocument xmlDoc = new XmlDocument();
+
+                xmlDoc.LoadXml(readText);
+
+                if (xmlDoc.SelectSingleNode("/InputDocument/DeclarationList")["Declaration"].GetAttribute("Command") != "DEFAULT")
+                {
+                    return -1;
+                }
+
+                if (xmlDoc.SelectSingleNode("/InputDocument/DeclarationList/Declaration/DeclarationHeader")["SiteID"].InnerText != "DUB")
+                    return -2;
+
+                return 0;
+
+            }
+            catch (XmlException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+    }
+}
